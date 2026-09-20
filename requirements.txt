@@ -1,0 +1,10 @@
+# Add Python dependencies for the PDF RAG chatbot here.
+fastapi
+uvicorn[standard]
+chromadb
+ollama
+pypdf
+google-genai
+python-dotenv
+rank-bm25
+langchain-text-splitters
