@@ -203,6 +203,3 @@ Open the local frontend URL shown in the terminal, typically http://localhost:51
 - Support multiple document formats.
 - Add automated retrieval evaluation and performance monitoring.
 
-## 📄 License
-
-Add an appropriate license before distributing the project.
