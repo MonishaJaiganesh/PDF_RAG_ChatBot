@@ -1,94 +1,208 @@
-# PDF RAG Chatbot
+# DocMind AI – PDF RAG Chatbot
 
-A chatbot that answers questions using information retrieved from PDF documents.
+An AI-powered PDF question-answering application built using **Retrieval-Augmented Generation (RAG)**. Upload PDF documents, ask questions in natural language, and receive context-aware answers with source page references.
 
-## Project idea
+## 🚀 Features
 
-This project is a PDF question-answering assistant built with retrieval-augmented
-generation (RAG). Users upload a PDF, the application extracts and chunks its text,
-creates embeddings, and stores the resulting document sections in a vector database.
+- Upload and process PDF documents
+- Extract text and split it into overlapping chunks
+- Generate embeddings using Ollama
+- Store document vectors in ChromaDB
+- Perform semantic search and BM25 keyword search
+- Combine results using Reciprocal Rank Fusion (RRF)
+- Rerank relevant chunks using a Cross-Encoder
+- Generate grounded answers using Google Gemini
+- Support document summaries and resume evaluation
+- Delete uploaded documents and their indexed data
 
-When a user asks a question, the system combines semantic vector search with BM25
-keyword search, merges the results, reranks the most relevant sections, and sends the
-selected context to Gemini to generate a grounded answer with source information.
+## 🏗️ Architecture
 
-The project is designed for resumes and other structured documents. It supports PDF
-upload and indexing, document-specific questions, project and skill discovery,
-resume evaluation, document deletion, and configurable retrieval for normal and
-comprehensive queries.
+```text
+             User
+              |
+              v
+       React Frontend
+              |
+          HTTP Requests
+              |
+              v
+       FastAPI Backend
+              |
+       +------+------+
+       |             |
+       v             v
+  PDF Ingestion   Query Processing
+       |             |
+  Extract Text    Semantic Search
+       |           + BM25 Search
+  Chunk Text          |
+       |              v
+  Ollama Embeddings  RRF Fusion
+       |              |
+       v              v
+    ChromaDB      Cross-Encoder
+                      |
+                      v
+                Google Gemini
+                      |
+                      v
+              Answer + Sources
+```
 
-## Problem it solves
+## 🔄 How It Works
 
-Important information in resumes and other PDF documents is often difficult to find
-quickly. Manually reading long documents for project names, skills, experience,
-certifications, or candidate strengths takes time and can lead to missed details.
+1. **PDF Upload:** The backend validates and saves the uploaded PDF.
+2. **Text Extraction:** `pypdf` extracts text from individual pages.
+3. **Chunking:** The extracted text is divided into overlapping chunks.
+4. **Embedding:** Ollama converts each chunk into a numerical vector.
+5. **Storage:** ChromaDB stores vectors, text chunks, and page metadata.
+6. **Hybrid Retrieval:** Semantic search and BM25 retrieve relevant content.
+7. **Reranking:** Reciprocal Rank Fusion combines results, and a Cross-Encoder ranks the candidates.
+8. **Answer Generation:** Google Gemini generates an answer using the retrieved context.
+9. **Source References:** The application returns the answer with document and page information.
 
-Basic keyword search also struggles with natural-language questions and related
-phrasing. This project solves that problem by combining keyword and semantic search,
-reranking the most relevant document sections, and generating answers grounded in
-the uploaded PDF. It helps users explore documents conversationally while keeping
-answers tied to the source content instead of relying only on unsupported model
-knowledge.
+## 🛠️ Tech Stack
 
-## Tech stack
+| Component | Technologies |
+|---|---|
+| Frontend | React, TypeScript, TanStack Start, Vite |
+| UI | Tailwind CSS, Radix UI |
+| Backend | Python, FastAPI, Uvicorn |
+| PDF Processing | pypdf, LangChain Text Splitters |
+| Embeddings | Ollama, `nomic-embed-text` |
+| Vector Database | ChromaDB |
+| Retrieval | BM25, Reciprocal Rank Fusion |
+| Reranking | Cross-Encoder |
+| LLM | Google Gemini |
 
-- **Frontend:** React, TypeScript, TanStack Start, TanStack Router, Vite, Tailwind CSS, Radix UI, and Lucide React
-- **Backend:** Python, FastAPI, Uvicorn, and Pydantic
-- **PDF processing:** `pypdf` and LangChain text splitters
-- **Retrieval:** Ollama embeddings, ChromaDB, BM25, Reciprocal Rank Fusion, and Cross-Encoder reranking
-- **Generation:** Google Gemini API, with Ollama-based generation support
-- **Storage:** ChromaDB persistent vector store and local PDF file storage
-- **Configuration:** Python dotenv and environment variables
-- **Evaluation:** Recall@K, Precision@K, and Mean Reciprocal Rank (MRR)
-
-## Project structure
+## 📂 Project Structure
 
 ```text
 pdf-rag-chatbot/
-├── api/
-│   └── main.py                  # FastAPI endpoints
-├── data/                        # Local PDF documents (not committed)
-├── evaluation/
-│   ├── evaluate.py              # Retrieval evaluation runner
-│   └── questions.py             # Evaluation questions and keywords
-├── frontend/                    # TanStack Start frontend
-│   ├── public/                  # Static assets
-│   └── src/
-│       ├── components/          # UI and DocMind components
-│       ├── hooks/               # React hooks
-│       ├── lib/docmind/         # API client and frontend state
-│       └── routes/              # Application routes
-├── ingestion/
-│   ├── chunker.py               # PDF text chunking
-│   ├── embedding.py             # Embedding generation
-│   └── pdf_loader.py             # PDF loading
-├── logs/                        # Application logs (not committed)
-├── retrieval/
-│   ├── gemini_generation.py     # Gemini response generation
-│   ├── generation.py            # Ollama response generation
-│   ├── reranker.py              # Cross-encoder reranking
-│   └── retriever.py             # Dense, BM25, and hybrid retrieval
-├── tests/                       # Automated tests
-├── vectorstore/
-│   ├── chroma_db/               # Local Chroma data (not committed)
-│   ├── chroma_store.py          # Chroma persistence helpers
-│   └── faiss_store.py            # FAISS persistence helpers
-├── .env.example                 # Environment variable template
-├── .gitignore                   # Git exclusions
-├── config.py                    # Application configuration
-├── logging_config.py            # Logging configuration
-├── main.py                      # Backend application entry point
-├── README.md                    # Project documentation
-└── requirements.txt             # Python dependencies
+├── api/              # FastAPI routes
+├── frontend/         # React frontend
+├── ingestion/        # PDF extraction and chunking
+├── retrieval/        # Search, reranking and generation
+├── vectorstore/      # ChromaDB storage
+├── evaluation/       # Retrieval evaluation
+├── data/             # Uploaded PDFs
+├── config.py         # Application configuration
+├── main.py           # Backend entry point
+├── requirements.txt  # Python dependencies
+└── README.md
 ```
 
-## Production configuration and logs
+## ⚙️ Setup and Installation
 
-Copy `.env.example` to `.env` and set deployment-specific values such as
-`DATA_DIR`, `VECTORSTORE_DIR`, `LOG_DIR`, `CORS_ORIGINS`, model names, and
-`GEMINI_API_KEY`. Relative paths are resolved from the repository root.
+### Prerequisites
 
-Application errors and stack traces are written to `logs/app.log`. The log
-rotates when it reaches `LOG_MAX_BYTES` and keeps `LOG_BACKUP_COUNT` files.
-Database lock, upload, deletion, Chroma, embedding, reranker, and Gemini
-failures include useful context such as the document ID and operation.
+- Python 3.10+
+- Node.js 18+
+- npm
+- [Ollama](https://ollama.com/)
+- Google Gemini API key
+
+### 1. Clone the Repository
+
+```bash
+git clone <your-repository-url>
+cd pdf-rag-chatbot
+```
+
+### 2. Set Up the Backend
+
+```bash
+python -m venv .venv
+```
+
+Activate the environment on Windows:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Configure Environment Variables
+
+Create a `.env` file from the provided template:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Add your Gemini API key:
+
+```env
+GEMINI_API_KEY=your-gemini-api-key
+```
+
+### 4. Install the Embedding Model
+
+```bash
+ollama pull nomic-embed-text
+```
+
+Ensure the Ollama service is running.
+
+### 5. Start the Backend
+
+From the repository root:
+
+```bash
+python -m uvicorn api.main:app --reload --port 8000
+```
+
+API documentation: http://localhost:8000/docs
+
+### 6. Start the Frontend
+
+Open another terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open the local frontend URL shown in the terminal, typically http://localhost:5173.
+
+## 🔌 API Endpoints
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/` | Health check |
+| POST | `/upload` | Upload and index a PDF |
+| POST | `/query` | Ask questions about a document |
+| DELETE | `/documents/{document_id}` | Delete a document and its indexed chunks |
+
+## 🔐 Security and Configuration
+
+- Store API keys in `.env` and never commit secrets.
+- Configure CORS for trusted frontend origins.
+- Persist uploaded PDFs and ChromaDB data.
+- Configure HTTPS before production deployment.
+
+## 🎯 Key Learning Outcomes
+
+- Implementing an end-to-end RAG pipeline
+- Building hybrid semantic and keyword retrieval
+- Improving retrieval quality through reranking
+- Integrating local embedding models with a cloud LLM
+- Developing APIs using FastAPI
+- Connecting a React frontend to an AI backend
+
+## 📌 Future Enhancements
+
+- Deploy the frontend and backend to production.
+- Add authentication and user-specific document management.
+- Support multiple document formats.
+- Add automated retrieval evaluation and performance monitoring.
+
+## 📄 License
+
+Add an appropriate license before distributing the project.
