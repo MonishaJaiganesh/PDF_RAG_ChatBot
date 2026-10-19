@@ -58,7 +58,6 @@ pdf-rag-chatbot/
 │       ├── hooks/               # React hooks
 │       ├── lib/docmind/         # API client and frontend state
 │       └── routes/              # Application routes
-├── frontend-old/                # Previous frontend implementation
 ├── ingestion/
 │   ├── chunker.py               # PDF text chunking
 │   ├── embedding.py             # Embedding generation
@@ -93,4 +92,3 @@ Application errors and stack traces are written to `logs/app.log`. The log
 rotates when it reaches `LOG_MAX_BYTES` and keeps `LOG_BACKUP_COUNT` files.
 Database lock, upload, deletion, Chroma, embedding, reranker, and Gemini
 failures include useful context such as the document ID and operation.
-
