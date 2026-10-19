@@ -72,8 +72,7 @@ pdf-rag-chatbot/
 ├── tests/                       # Automated tests
 ├── vectorstore/
 │   ├── chroma_db/               # Local Chroma data (not committed)
-│   ├── chroma_store.py          # Chroma persistence helpers
-│   └── faiss_store.py            # FAISS persistence helpers
+│   └── chroma_store.py          # Chroma persistence helpers
 ├── .env.example                 # Environment variable template
 ├── .gitignore                   # Git exclusions
 ├── config.py                    # Application configuration
@@ -93,4 +92,3 @@ Application errors and stack traces are written to `logs/app.log`. The log
 rotates when it reaches `LOG_MAX_BYTES` and keeps `LOG_BACKUP_COUNT` files.
 Database lock, upload, deletion, Chroma, embedding, reranker, and Gemini
 failures include useful context such as the document ID and operation.
-
